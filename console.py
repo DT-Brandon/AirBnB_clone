@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """HBNB Command interpreter module"""
 import cmd
+import string
 
 
 class HBNBCommand(cmd.Cmd):
@@ -34,7 +35,11 @@ class HBNBCommand(cmd.Cmd):
 
     def parseline(self, line):
         """Parse command line"""
-        return cmd.Cmd.parseline(self, line)
+        for char in line:
+            if char in list(string.punctuation) + [' ']:
+                cmd_list = line.partition(char)
+                return (cmd_list[0], ''.join(cmd_list[1:]).strip(), line)
+        return (line, '', line)
 
     def do_create(self, line):
         """Creates a new instance and saves it to JSON file"""
