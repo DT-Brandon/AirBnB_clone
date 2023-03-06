@@ -52,6 +52,9 @@ class HBNBCommand(cmd.Cmd):
         based on the class name"""
         if not HBNBCommand.check_class(line):
             return
+        if not HBNBCommand.check_id(line):
+            return
+        print(storage.all()[f'{line.split()[1]}'])
 
     def do_destroy(self, line):
         """Delete an instance based on the class name and id"""
@@ -81,6 +84,16 @@ class HBNBCommand(cmd.Cmd):
             HBNBCommand.handle_errors('class_not_exist')
             return False
         return True
+
+    @staticmethod
+    def check_id(line):
+        cls = line.split()[0]
+        try:
+            if f'{cls}.{line.split()[1]}' not in storage.all().keys():
+                HBNBCommand.handle_errors('no_instance')
+                return False
+        except:
+            HBNBCommand.handle_errors('id_missing')
 
 
 if __name__ == '__main__':
