@@ -60,12 +60,29 @@ class HBNBCommand(cmd.Cmd):
 
     def do_destroy(self, line):
         """Delete an instance based on the class name and id"""
-        pass
+        cls = HBNBCommand.check_class(line)
+        if cls == None:
+            return
+        instance = HBNBCommand.check_id(line)
+        if instance == None:
+            return
+        key = f'{cls.__name__}.{instance.id}'
+        del storage.all()[key]
+        storage.save()
 
     def do_all(self, line):
         """Prints all string representation of all instances
         based or not on the class name"""
-        pass
+        if line:
+            cls = HBNBCommand.check_class(line)
+            if cls == None:
+                return
+            all_instance = [obj for obj in storage.all().values()
+                            if obj.to_dict()['__class__'] == cls.__name__]
+        else:
+            all_instance = storage.all().values()
+        for instance in all_instance:
+            print(instance)
 
     def do_update(self, line):
         """Update an instance based on the class name and id
