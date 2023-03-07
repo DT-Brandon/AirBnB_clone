@@ -2,6 +2,7 @@
 """HBNB Command interpreter module"""
 import cmd
 import string
+from models import storage
 
 
 class HBNBCommand(cmd.Cmd):
@@ -16,9 +17,6 @@ class HBNBCommand(cmd.Cmd):
             'attribute_missing': '** attribute name missing **',
             'value_missing': '** value missing **'
             }
-    classes = [
-            'BaseModel', 'User', 'State', 'City', 'Amenity', 'Place', 'Review'
-            ] # placeholder array for class list dict
 
     def do_EOF(self, line):
         """Exits the console"""
@@ -43,18 +41,22 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, line):
         """Creates a new instance and saves it to JSON file"""
-        if not HBNBCommand.check_class(line):
+        cls = HBNBCommand.check_class(line)
+        if cls == None:
             return
-        print(f'{line} created')
+        new_instance = cls()
+        new_instance.save()
+        print(new_instance.id)
 
     def do_show(self, line):
         """Prints the string representation of an instance
         based on the class name"""
-        if not HBNBCommand.check_class(line):
+        if HBNBCommand.check_class(line) == None:
             return
-        if not HBNBCommand.check_id(line):
+        instance = HBNBCommand.check_id(line)
+        if instance == None:
             return
-        print(storage.all()[f'{line.split()[1]}'])
+        print(instance)
 
     def do_destroy(self, line):
         """Delete an instance based on the class name and id"""
@@ -79,21 +81,23 @@ class HBNBCommand(cmd.Cmd):
     def check_class(line):
         if not line:
             HBNBCommand.handle_errors('class_missing')
-            return False
-        if line.split()[0] not in HBNBCommand.classes:
+            return
+        if line.split()[0] not in storage.classes().keys():
             HBNBCommand.handle_errors('class_not_exist')
-            return False
-        return True
+            return
+        return storage.classes()[line.split()[0]]
 
     @staticmethod
     def check_id(line):
         cls = line.split()[0]
         try:
-            if f'{cls}.{line.split()[1]}' not in storage.all().keys():
+            key = f'{cls}.{line.split()[1]}'
+            if key not in storage.all().keys():
                 HBNBCommand.handle_errors('no_instance')
-                return False
-        except:
+                return
+        except Exception:
             HBNBCommand.handle_errors('id_missing')
+        return storage.all()[key]
 
 
 if __name__ == '__main__':

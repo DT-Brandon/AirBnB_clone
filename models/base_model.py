@@ -19,6 +19,7 @@ class BaseModel:
             - **kwargs: dict of key-values arguments
         """
         if kwargs is not None and kwargs != {}:
+            del kwargs['__class__']
             for key in kwargs:
                 if key == "created_at":
                     self.__dict__["created_at"] = datetime.strptime(
