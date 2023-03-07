@@ -42,7 +42,7 @@ class HBNBCommand(cmd.Cmd):
     def do_create(self, line):
         """Creates a new instance and saves it to JSON file"""
         cls = HBNBCommand.check_class(line)
-        if cls == None:
+        if cls is None:
             return
         new_instance = cls()
         new_instance.save()
@@ -51,26 +51,55 @@ class HBNBCommand(cmd.Cmd):
     def do_show(self, line):
         """Prints the string representation of an instance
         based on the class name"""
-        if HBNBCommand.check_class(line) == None:
+        if HBNBCommand.check_class(line) is None:
             return
         instance = HBNBCommand.check_id(line)
-        if instance == None:
+        if instance is None:
             return
         print(instance)
 
     def do_destroy(self, line):
         """Delete an instance based on the class name and id"""
-        pass
+        cls = HBNBCommand.check_class(line)
+        if cls is None:
+            return
+        instance = HBNBCommand.check_id(line)
+        if instance is None:
+            return
+        key = f'{cls.__name__}.{instance.id}'
+        del storage.all()[key]
+        storage.save()
 
     def do_all(self, line):
         """Prints all string representation of all instances
         based or not on the class name"""
-        pass
+        if line:
+            cls = HBNBCommand.check_class(line)
+            if cls is None:
+                return
+            all_instance = [obj for obj in storage.all().values()
+                            if obj.to_dict()['__class__'] == cls.__name__]
+        else:
+            all_instance = storage.all().values()
+        for instance in all_instance:
+            print(instance)
 
     def do_update(self, line):
         """Update an instance based on the class name and id
         by adding or updating attribute"""
-        pass
+        cls = HBNBCommand.check_class(line)
+        if cls is None:
+            return
+        instance = HBNBCommand.check_id(line)
+        if instance is None:
+            return
+        attr, value = HBNBCommand.check_attr(line)
+        if attr is None or value is None:
+            return
+        value = value.strip('"')
+        value = storage.attributes()[cls.__name__][attr](value)
+        setattr(instance, attr, value)
+        instance.save()
 
     @classmethod
     def handle_errors(cls, error):
@@ -79,6 +108,7 @@ class HBNBCommand(cmd.Cmd):
 
     @staticmethod
     def check_class(line):
+        """checks for class"""
         if not line:
             HBNBCommand.handle_errors('class_missing')
             return
@@ -89,6 +119,7 @@ class HBNBCommand(cmd.Cmd):
 
     @staticmethod
     def check_id(line):
+        """check for instance id"""
         cls = line.split()[0]
         try:
             key = f'{cls}.{line.split()[1]}'
@@ -98,6 +129,19 @@ class HBNBCommand(cmd.Cmd):
         except Exception:
             HBNBCommand.handle_errors('id_missing')
         return storage.all()[key]
+
+    @staticmethod
+    def check_attr(line):
+        """check for attribute and value"""
+        if len(line.split()) < 3:
+            HBNBCommand.handle_errors('attribute_missing')
+            return
+        attr = line.split()[2]
+        if len(line.split()) < 4:
+            HBNBCommand.handle_errors('value_missing')
+            return
+        value = line.split()[3]
+        return (attr, value)
 
 
 if __name__ == '__main__':
