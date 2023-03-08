@@ -135,11 +135,11 @@ class HBNBCommand(cmd.Cmd):
         """check for attribute and value"""
         if len(line.split()) < 3:
             HBNBCommand.handle_errors('attribute_missing')
-            return
+            return None, None
         attr = line.split()[2]
         if len(line.split()) < 4:
             HBNBCommand.handle_errors('value_missing')
-            return
+            return attr, None
         value = line.split()[3]
         return (attr, value)
 
