@@ -34,9 +34,9 @@ class HBNBCommand(cmd.Cmd):
     def parseline(self, line):
         """Parse command line"""
         if '(' in line or '"' in line:
-            cls = line.split('.')[0]
-            cmd = line.split('.')[1].split('(')[0]
-            args = ''.join(line.split('.')[1].split('(')[1].strip(')'))
+            cls, line = line.split('.')
+            cmd, line = line.split('(')
+            args = ''.join(line.strip(')'))
             return (cmd, f'{cls} {args}', f'{cmd} {cls} {args}')
         for char in line:
             if char in list(string.punctuation) + [' ']:
@@ -105,6 +105,14 @@ class HBNBCommand(cmd.Cmd):
         value = storage.attributes()[cls.__name__][attr](value)
         setattr(instance, attr, value)
         instance.save()
+
+    def do_count(self, line):
+        """Number of instances in class"""
+        cls = HBNBCommand.check_class(line)
+        if cls is None:
+            return
+        print(len([obj for obj in storage.all().values()
+                   if obj.to_dict()['__class__'] == cls.__name__]))
 
     @classmethod
     def handle_errors(cls, error):
