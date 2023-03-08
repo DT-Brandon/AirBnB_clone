@@ -123,11 +123,12 @@ class HBNBCommand(cmd.Cmd):
         cls = line.split()[0]
         try:
             key = f'{cls}.{line.split()[1]}'
-            if key not in storage.all().keys():
+            if key is None or key not in storage.all().keys():
                 HBNBCommand.handle_errors('no_instance')
                 return
         except Exception:
             HBNBCommand.handle_errors('id_missing')
+            return
         return storage.all()[key]
 
     @staticmethod
