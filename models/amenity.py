@@ -8,4 +8,3 @@ from models.base_model import BaseModel
 class Amenity(BaseModel):
     """class of an Amenity"""
     name = ""
-

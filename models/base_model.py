@@ -1,6 +1,6 @@
 #!/usr/bin/python3
-"""""base_model.py contains the model superclass that will serve for
-all classes in the airBnN project
+"""""base_model.py contains the model superclass that will
+serve for all classes in the airBnN project
 """
 
 import uuid
@@ -9,7 +9,7 @@ from models import storage
 
 
 class BaseModel:
-    """ is the actual model for all classes in this project"""
+    """is the actual model for all classes in this project"""
 
     def __init__(self, *args, **kwargs):
         """Initialization of a Base instance.
@@ -37,16 +37,21 @@ class BaseModel:
             storage.new(self)
 
     def __str__(self):
-        """ returns a human-readable string representation """
-        return " [{}] ({}) {}".format(type(self).__name__, self.id, self.__dict__)
+        """returns a human-readable string representation"""
+        return "[{}] ({}) {}".format(
+                type(self).__name__, self.id, self.__dict__)
 
     def save(self):
-        """ updates the public instance attribute updated_at with the current datetime """
+        """updates the public instance attribute
+        updated_at with the current datetime
+        """
         self.updated_at = datetime.now()
         storage.save()
 
     def to_dict(self):
-        """ returns a dictionary containing all keys/values of __dict__ of the instance """
+        """returns a dictionary containing all
+        keys/values of __dict__ of the instance
+        """
 
         my_dict = self.__dict__.copy()
         my_dict["__class__"] = type(self).__name__
@@ -54,4 +59,3 @@ class BaseModel:
         my_dict["updated_at"] = my_dict["updated_at"].isoformat()
 
         return my_dict
-
