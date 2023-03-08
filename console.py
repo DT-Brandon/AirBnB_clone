@@ -33,11 +33,12 @@ class HBNBCommand(cmd.Cmd):
 
     def parseline(self, line):
         """Parse command line"""
-        if '(' in line or '"' in line:
+        if '(' in line and ')' in line and '.' in line:
             cls, line = line.split('.')
             cmd, line = line.split('(')
-            args = ''.join(line.strip(')'))
-            args = args.strip('"')
+            args = line.strip(')')
+            args = ' '.join([x.strip()
+                             for x in args.replace('"', '').split(',')])
             return (cmd, f'{cls} {args}', f'{cmd} {cls} {args}')
         for char in line:
             if char in list(string.punctuation) + [' ']:
