@@ -3,6 +3,7 @@
 import cmd
 import string
 from models import storage
+import re
 
 
 class HBNBCommand(cmd.Cmd):
@@ -34,11 +35,16 @@ class HBNBCommand(cmd.Cmd):
     def parseline(self, line):
         """Parse command line"""
         if '(' in line and ')' in line and '.' in line:
-            cls, line = line.split('.')
+            cls, sep, line = line.partition('.')
             cmd, line = line.split('(')
             args = line.strip(')')
-            args = ' '.join([x.strip()
-                             for x in args.replace('"', '').split(',')])
+            if '{' in args and '}' in args:
+                instance_id, sep, dict_arg = args.partition(',')
+                instance_id = instance_id.strip('"')
+                args = f'{instance_id} {dict_arg}'
+            else:
+                args = ' '.join([x.strip()
+                                 for x in args.replace('"', '').split(',')])
             return (cmd, f'{cls} {args}', f'{cmd} {cls} {args}')
         for char in line:
             if char in list(string.punctuation) + [' ']:
@@ -84,12 +90,11 @@ class HBNBCommand(cmd.Cmd):
             cls = HBNBCommand.check_class(line)
             if cls is None:
                 return
-            all_instance = [obj for obj in storage.all().values()
+            all_instance = [str(obj) for obj in storage.all().values()
                             if obj.to_dict()['__class__'] == cls.__name__]
         else:
-            all_instance = storage.all().values()
-        for instance in all_instance:
-            print(instance)
+            all_instance = [str(obj) for obj in storage.all().values()]
+        print(all_instance)
 
     def do_update(self, line):
         """Update an instance based on the class name and id
@@ -100,12 +105,21 @@ class HBNBCommand(cmd.Cmd):
         instance = HBNBCommand.check_id(line)
         if instance is None:
             return
-        attr, value = HBNBCommand.check_attr(line)
-        if attr is None or value is None:
-            return
-        value = value.strip('"')
-        value = storage.attributes()[cls.__name__][attr](value)
-        setattr(instance, attr, value)
+        if '{' in line and '}' in line:
+            if len(line.split()) < 3:
+                HBNBCommand.handle_errors('value_missing')
+                return
+            dict_arg = re.search('{.*}', line).group(0)
+            dict_arg = eval(dict_arg)
+            for attr, value in dict_arg.items():
+                setattr(instance, attr, value)
+        else:
+            attr, value = HBNBCommand.check_attr(line)
+            if attr is None or value is None:
+                return
+            value = value.strip('"')
+            value = storage.attributes()[cls.__name__][attr](value)
+            setattr(instance, attr, value)
         instance.save()
 
     def do_count(self, line):
