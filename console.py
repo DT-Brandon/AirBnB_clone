@@ -37,6 +37,7 @@ class HBNBCommand(cmd.Cmd):
             cls, line = line.split('.')
             cmd, line = line.split('(')
             args = ''.join(line.strip(')'))
+            args = args.strip('"')
             return (cmd, f'{cls} {args}', f'{cmd} {cls} {args}')
         for char in line:
             if char in list(string.punctuation) + [' ']:
