@@ -37,3 +37,19 @@ EOF   all   count   create   destroy   help   quit   show
 (hbnb)
 $
 ```
+Classes defined
+---------------
+- BaseModel
+- User
+- Place
+- State
+- City
+- Amenity
+- Review
+
+```bash
+$ create <class>
+$ all [<class>]
+$ show <class> <id>
+$ destroy <class> <id>
+```
