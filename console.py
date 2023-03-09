@@ -63,7 +63,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_show(self, line):
         """Prints the string representation of an instance
-        based on the class name"""
+based on the class name"""
         if HBNBCommand.check_class(line) is None:
             return
         instance = HBNBCommand.check_id(line)
@@ -85,7 +85,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_all(self, line):
         """Prints all string representation of all instances
-        based or not on the class name"""
+based or not on the class name"""
         if line:
             cls = HBNBCommand.check_class(line)
             if cls is None:
@@ -98,7 +98,7 @@ class HBNBCommand(cmd.Cmd):
 
     def do_update(self, line):
         """Update an instance based on the class name and id
-        by adding or updating attribute"""
+by adding or updating attribute"""
         cls = HBNBCommand.check_class(line)
         if cls is None:
             return
