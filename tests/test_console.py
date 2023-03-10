@@ -106,7 +106,15 @@ class TestHBNBCommand(TestCase):
             self.assertIsNotNone(output)
             self.assertRegex(output, expected_print_fmt)
 
+        expected_print_fmt = '.{8}\-.{4}\-.{4}\-.{4}\-.{12}\n'
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd('BaseModel.create()')
+            output = f.getvalue()
+            self.assertIsNotNone(output)
+            self.assertRegex(output, expected_print_fmt)
+
     def test_do_show(self):
+        expected = '^\[BaseModel\] \(.{8}\-.{4}\-.{4}\-.{4}\-.{12}\) \{.*\}\n$'
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd('create BaseModel')
             obj_id = f.getvalue()
@@ -114,6 +122,38 @@ class TestHBNBCommand(TestCase):
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd(f'show BaseModel {obj_id}')
             output = f.getvalue()
-            result = re.match('^\[BaseModel\] \(.{8}\-.{4}\-.{4}\-.{4}\-.{12}\) {.*}\n', output)
-            self.assertIsNotNone(result)
-        print(output)
+            self.assertIsNotNone(output)
+            self.assertRegex(output, expected)
+
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd(f'BaseModel.show("{obj_id}")')
+            output = f.getvalue()
+            self.assertIsNotNone(output)
+            self.assertRegex(output, expected)
+
+    def test_do_destroy(self):
+        expected_error = '** no instance found **\n'
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd('create BaseModel')
+            obj_id = f.getvalue()
+
+        HBNBCommand().onecmd(f'destroy BaseModel {obj_id}')
+
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd(f'show BaseModel {obj_id}')
+            output = f.getvalue()
+            self.assertEqual(output, expected_error)
+
+    def test_do_all(self):
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd('create BaseModel')
+            HBNBCommand().onecmd('create BaseModel')
+            HBNBCommand().onecmd('create Place')
+            HBNBCommand().onecmd('create City')
+
+        expected = '^\["\[BaseModel\] \(.*\) \{.*\}"' 
+        with patch('sys.stdout', new=StringIO()) as f:
+            HBNBCommand().onecmd(f'all')
+            output = f.getvalue()
+            self.assertIsNotNone(output)
+            self.assertRegex(output, expected)
