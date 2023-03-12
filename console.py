@@ -112,13 +112,14 @@ by adding or updating attribute"""
             dict_arg = re.search('{.*}', line).group(0)
             dict_arg = eval(dict_arg)
             for attr, value in dict_arg.items():
+                value = storage.attributes()[attr](value)
                 setattr(instance, attr, value)
         else:
             attr, value = HBNBCommand.check_attr(line)
             if attr is None or value is None:
                 return
             value = value.strip('"')
-            value = storage.attributes()[cls.__name__][attr](value)
+            value = storage.attributes()[attr](value)
             setattr(instance, attr, value)
         instance.save()
 
