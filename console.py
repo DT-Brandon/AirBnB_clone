@@ -171,7 +171,12 @@ by adding or updating attribute"""
         if len(line.split()) < 4:
             HBNBCommand.handle_errors('value_missing')
             return attr, None
-        value = line.split()[3]
+        if '"' in line:
+            value = line.split('"')[1]
+            value = value.strip('"')
+            print(value)
+        else:
+            value = line.split()[3]
         return (attr, value)
 
 
