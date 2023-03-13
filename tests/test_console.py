@@ -99,7 +99,7 @@ class TestHBNBCommand(TestCase):
             self.assertEqual(output, expected_error)
 
     def test_do_create(self):
-        expected_print_fmt = '.{8}\-.{4}\-.{4}\-.{4}\-.{12}'
+        expected_print_fmt = '.{8}\\-.{4}\\-.{4}\\-.{4}\\-.{12}'
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd('create BaseModel')
             output = f.getvalue()
@@ -151,7 +151,7 @@ class TestHBNBCommand(TestCase):
             HBNBCommand().onecmd('create Place')
             HBNBCommand().onecmd('create City')
 
-        expected = '^\["\[BaseModel\] \(.*\) \{.*\}"' 
+        expected = '^\["\[BaseModel\] \(.*\) \{.*\}"'
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd(f'all')
             output = f.getvalue()
