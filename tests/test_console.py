@@ -106,7 +106,7 @@ class TestHBNBCommand(TestCase):
             self.assertIsNotNone(output)
             self.assertRegex(output, expected_print_fmt)
 
-        expected_print_fmt = '.{8}\-.{4}\-.{4}\-.{4}\-.{12}\n'
+        expected_print_fmt = '.{8}\\-.{4}\\-.{4}\\-.{4}\\-.{12}\n'
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd('BaseModel.create()')
             output = f.getvalue()
@@ -114,7 +114,8 @@ class TestHBNBCommand(TestCase):
             self.assertRegex(output, expected_print_fmt)
 
     def test_do_show(self):
-        expected = '^\[BaseModel\] \(.{8}\-.{4}\-.{4}\-.{4}\-.{12}\) \{.*\}\n$'
+        expected = '^\\[BaseModel\\] \\(.{8}\\\
+-.{4}\\-.{4}\\-.{4}\\-.{12}\\) \\{.*\\}\n$'
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd('create BaseModel')
             obj_id = f.getvalue()
@@ -151,7 +152,7 @@ class TestHBNBCommand(TestCase):
             HBNBCommand().onecmd('create Place')
             HBNBCommand().onecmd('create City')
 
-        expected = '^\["\[BaseModel\] \(.*\) \{.*\}"'
+        expected = '^\\["\\[BaseModel\\] \\(.*\\) \\{.*\\}"'
         with patch('sys.stdout', new=StringIO()) as f:
             HBNBCommand().onecmd(f'all')
             output = f.getvalue()
