@@ -112,13 +112,14 @@ by adding or updating attribute"""
             dict_arg = re.search('{.*}', line).group(0)
             dict_arg = eval(dict_arg)
             for attr, value in dict_arg.items():
+                value = storage.attributes()[attr](value)
                 setattr(instance, attr, value)
         else:
             attr, value = HBNBCommand.check_attr(line)
             if attr is None or value is None:
                 return
             value = value.strip('"')
-            value = storage.attributes()[cls.__name__][attr](value)
+            value = storage.attributes()[attr](value)
             setattr(instance, attr, value)
         instance.save()
 
@@ -170,7 +171,12 @@ by adding or updating attribute"""
         if len(line.split()) < 4:
             HBNBCommand.handle_errors('value_missing')
             return attr, None
-        value = line.split()[3]
+        if '"' in line:
+            value = line.split('"')[1]
+            value = value.strip('"')
+            print(value)
+        else:
+            value = line.split()[3]
         return (attr, value)
 
 
